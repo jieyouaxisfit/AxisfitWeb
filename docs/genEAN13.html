@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成 EAN-13 條碼</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        textarea, button {
+            padding: 10px;
+            margin: 5px;
+        }
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+        .valid {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>生成 EAN-13 條碼</h1>
+    <p>請輸入每行的前12個數字（每行一個條碼）：</p>
+    <textarea id="eanInput" rows="10" cols="30" placeholder="每行輸入12個數字"></textarea>
+    <br>
+    <button onclick="generateEAN13()">生成 EAN-13 條碼</button>
+    
+    <div class="result" id="result"></div>
+
+    <script>
+        function generateEAN13() {
+            let ean12Lines = document.getElementById("eanInput").value.split("\n");
+            let resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = '完整的 EAN-13 條碼:'; // 清空之前的結果
+
+            ean12Lines.forEach(line => {
+                let ean12 = line.trim();
+
+                // 跳過空行
+                if (ean12 === "") return;
+
+                // 檢查是否為有效的12位數字
+                if (ean12.length !== 12 || !/^\d+$/.test(ean12)) {
+                    // 顯示錯誤信息（但不對空行顯示錯誤）
+                    return;
+                }
+
+                // 計算檢查碼
+                let sumOdd = 0;
+                let sumEven = 0;
+                for (let i = 0; i < 12; i++) {
+                    let digit = parseInt(ean12[i]);
+                    if (i % 2 === 0) { // 奇數位 (1基礎)，即 0, 2, 4...
+                        sumOdd += digit;
+                    } else { // 偶數位 (1基礎)，即 1, 3, 5...
+                        sumEven += digit;
+                    }
+                }
+
+                // 奇數位的和乘以3
+                let total = sumOdd + sumEven * 3;
+                // 計算檢查碼
+                let checkDigit = (10 - (total % 10)) % 10;
+                // 生成完整的 EAN-13 條碼
+                let ean13 = ean12 + checkDigit;
+                // 顯示有效的 EAN-13 條碼
+                let successMessage1 = `<div class="valid">${sumOdd}:${sumEven}:${total}:${checkDigit}</div>`;
+                resultDiv.innerHTML += successMessage1;
+                let successMessage = `<div class="valid">${ean13}</div>`;
+                resultDiv.innerHTML += successMessage;
+            });
+        }
+    </script>
+</body>
+</html>
