@@ -71,8 +71,6 @@
                 // 生成完整的 EAN-13 條碼
                 let ean13 = ean12 + checkDigit;
                 // 顯示有效的 EAN-13 條碼
-                let successMessage1 = `<div class="valid">${sumOdd}:${sumEven}:${total}:${checkDigit}</div>`;
-                resultDiv.innerHTML += successMessage1;
                 let successMessage = `<div class="valid">${ean13}</div>`;
                 resultDiv.innerHTML += successMessage;
             });
